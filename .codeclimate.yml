@@ -9,3 +9,6 @@ exclude_patterns:
 - "app/Http/Controllers/V1/VerifikasiController.php"
 - "app/Http/Controllers/V1/RegistrasiMandiriController.php"
 - "app/Http/Controllers/V1/PCRController.php"
+- "app/Http/Controllers/V1/EkstraksiController.php"
+- "app/Http/Controllers/V1/SampleController.php"
+- "app/Http/Controllers/RegistrasiMandiri.php"
