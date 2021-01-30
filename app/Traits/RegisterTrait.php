@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -78,12 +79,12 @@ trait RegisterTrait
             "info" => json_encode(array(
                 "register" => $registerLogs,
                 "sampel" => $sampelLogs,
-                "pasien" => $pasienLogs
-            ))
+                "pasien" => $pasienLogs,
+            )),
         ]);
     }
 
-    public function getRequestPasien(Request $request) : array
+    public function getRequestPasien(Request $request): array
     {
         return [
             'nama_lengkap' => $request->get('reg_nama_pasien'),
@@ -110,7 +111,7 @@ trait RegisterTrait
         ];
     }
 
-    public function getRequestRegister(Request $request, $typeRequest = 'update') : array
+    public function getRequestRegister(Request $request, $typeRequest = 'update'): array
     {
         $register = [
             'sumber_pasien' => $request->get('reg_sumberpasien'),
@@ -118,8 +119,8 @@ trait RegisterTrait
             'kunjungan_ke' => $request->get('reg_kunjungan_ke'),
             'rs_kunjungan' => $request->get('reg_rsfasyankes'),
             'sumber_pasien' => $request->get('reg_sumberpasien') == "Umum" ?
-                "Umum" :
-                $request->get('reg_sumberpasien_isian'),
+            "Umum" :
+            $request->get('reg_sumberpasien_isian'),
         ];
 
         if ($typeRequest != 'update') {
