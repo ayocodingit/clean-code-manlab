@@ -219,31 +219,8 @@ class RegistrasiMandiri extends Controller
         return !$isData ? response()->json($result) : $models;
     }
 
-    public function exportExcel(Request $request)
-    {
-        $request->validate([
-            'start_date' => 'nullable', // 'date|date_format:Y-m-d',
-             'end_date' => 'nullable', // 'date|date_format:Y-m-d',
-        ]);
-
-        $payload = [];
-
-        if ($request->has('start_date')) {
-            $payload['startDate'] = parseDate($request->input('start_date'));
-        }
-
-        if ($request->has('end_date')) {
-            // $payload['endDate'] = parseDate($request->input('end_date'));
-            $payload['endDate'] = date('Y-m-d', strtotime($request->input('end_date') . "+1 days"));
-        }
-
-        return Excel::download(new RegisMandiriExport($payload), 'registrasi-mandiri-' . time() . '.xlsx');
-    }
-
     public function exportMandiri(Request $request)
     {
-        ini_set('max_execution_time', '0');
-
         $models = $this->getData($request, true);
         $no = (int)($request->get('page', 1) - 1) * $request->get('perpage', 500) + 1;
         foreach ($models as $idx => &$model) {
@@ -307,7 +284,6 @@ class RegistrasiMandiri extends Controller
 
     public function exportRujukan(Request $request)
     {
-        ini_set('max_execution_time', '0');
         $models = $this->getData($request, true);
         $no = (int)($request->get('page', 1) - 1) * $request->get('perpage', 500) + 1;
         foreach ($models as $idx => &$model) {
