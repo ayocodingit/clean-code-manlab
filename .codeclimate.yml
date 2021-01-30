@@ -3,3 +3,4 @@ exclude_patterns:
 - "public"
 - "database"
 - "routes"
+- "app/Console"
