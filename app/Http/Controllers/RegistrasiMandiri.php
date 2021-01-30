@@ -200,32 +200,32 @@ class RegistrasiMandiri extends Controller
                 case "sumber_pasien":
                     $models = $models->where('register.sumber_pasien', $val);
                     break;
-                case "sumber_sampel":
-                case "nama_rs":
-                    $models = $models->where("register.nama_rs", 'ilike', '%' . $val . '%');
-                    break;
-                case "nama_rs_id":
-                    $models = $models->where("register.fasyankes_id", $val);
-                    break;
-                case "nama_rs_lainnya":
-                    $models = $models->where("register.other_nama_rs", 'ilike', '%' . $val . '%');
-                    break;
-                case "kota":
-                    $models = $models->where('kota.id', $val);
-                    break;
-                case "kategori":
-                case "kategori_isian":
-                    $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
-                    break;
-                case "start_nomor_sampel":
-                    $models = $this->nomorSampel($val, '>=', $models);
-                    break;
-                case "end_nomor_sampel":
-                    $models = $this->nomorSampel($val, '<=', $models);
-                    break;
-                case "reg_fasyankes_pengirim":
-                    $models = $models->where('register.fasyankes_pengirim', 'ilike', $val);
-                    break;
+                // case "sumber_sampel":
+                // case "nama_rs":
+                //     $models = $models->where("register.nama_rs", 'ilike', '%' . $val . '%');
+                //     break;
+                // case "nama_rs_id":
+                //     $models = $models->where("register.fasyankes_id", $val);
+                //     break;
+                // case "nama_rs_lainnya":
+                //     $models = $models->where("register.other_nama_rs", 'ilike', '%' . $val . '%');
+                //     break;
+                // case "kota":
+                //     $models = $models->where('kota.id', $val);
+                //     break;
+                // case "kategori":
+                // case "kategori_isian":
+                //     $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
+                //     break;
+                // case "start_nomor_sampel":
+                //     $models = $this->nomorSampel($val, '>=', $models);
+                //     break;
+                // case "end_nomor_sampel":
+                //     $models = $this->nomorSampel($val, '<=', $models);
+                //     break;
+                // case "reg_fasyankes_pengirim":
+                //     $models = $models->where('register.fasyankes_pengirim', 'ilike', $val);
+                //     break;
             }
         }
         return $models;
