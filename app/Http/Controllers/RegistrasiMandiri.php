@@ -67,9 +67,6 @@ class RegistrasiMandiri extends Controller
     public function exportMandiri(Request $request)
     {
         $recordMandiri = $this->getDataExport($request, 'mandiri');
-
-
-
         $mapping = function ($model) {
             return [
                 $model->no,
@@ -96,17 +93,12 @@ class RegistrasiMandiri extends Controller
                 parseDate($model->created_at),
             ];
         };
-        $column_format = [
-        ];
-
-        return Excel::download(new AjaxTableExport($recordMandiri, $this->header, $mapping, $column_format, 'Registrasi Mandiri', 'V', $models->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
+        return Excel::download(new AjaxTableExport($recordMandiri, $this->header, $mapping, [], 'Registrasi Mandiri', 'V', $recordMandiri->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
     }
 
     public function exportRujukan(Request $request)
     {
         $models = $this->getDataExport($request, 'rujukan');
-
-
         $mapping = function ($model) {
             return [
                 $model->no,
@@ -137,10 +129,7 @@ class RegistrasiMandiri extends Controller
                 parseDate($model->created_at),
             ];
         };
-        $column_format = [
-        ];
-
-        return Excel::download(new AjaxTableExport($models, $this->header, $mapping, $column_format, 'Registrasi Rujukan', 'Z', $models->count()), 'Registrasi-Rujukan-' . time() . '.xlsx');
+        return Excel::download(new AjaxTableExport($models, $this->header, $mapping, [], 'Registrasi Rujukan', 'Z', $models->count()), 'Registrasi-Rujukan-' . time() . '.xlsx');
     }
 
     public function getDataExport(Request $request, $jenis)
@@ -203,9 +192,9 @@ class RegistrasiMandiri extends Controller
                 case "end_date":
                     $models = $models->where('register.created_at', '<=', substr($val, 0, 10) . ' 23:59:59');
                     break;
-                case "sumber_pasien":
-                    $models = $models->where('register.sumber_pasien', $val);
-                    break;
+                // case "sumber_pasien":
+                //     $models = $models->where('register.sumber_pasien', $val);
+                //     break;
                 // case "sumber_sampel":
                 // case "nama_rs":
                 //     $models = $models->where("register.nama_rs", 'ilike', '%' . $val . '%');
