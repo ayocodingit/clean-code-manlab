@@ -66,7 +66,7 @@ class RegistrasiMandiri extends Controller
 
     public function exportMandiri(Request $request)
     {
-        $models = $this->getDataExport($request);
+        $recordMandiri = $this->getDataExport($request);
 
         $this->header[] = 'Kunjungan Ke';
         $this->header[] = 'Tanggal Registrasi';
@@ -100,7 +100,7 @@ class RegistrasiMandiri extends Controller
         $column_format = [
         ];
 
-        return Excel::download(new AjaxTableExport($models, $this->header, $mapping, $column_format, 'Registrasi Mandiri', 'V', $models->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
+        return Excel::download(new AjaxTableExport($recordMandiri, $this->header, $mapping, $column_format, 'Registrasi Mandiri', 'V', $models->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
     }
 
     public function exportRujukan(Request $request)
@@ -191,10 +191,6 @@ class RegistrasiMandiri extends Controller
                 case "nomor_register":
                     $models = $models->where('register.nomor_register', 'ilike', '%' . $val . '%');
                     break;
-                case "nomor_sampel":
-                    $sampel = Sampel::where('nomor_sampel', 'ilike', $val)->pluck('register_id');
-                    $models = $models->whereIn('register.id', $sampel);
-                    break;
                 case "start_date":
                     $models = $models->where('register.created_at', '>=', substr($val, 0, 10) . ' 00:00:00');
                     break;
@@ -205,8 +201,6 @@ class RegistrasiMandiri extends Controller
                     $models = $models->where('register.sumber_pasien', $val);
                     break;
                 case "sumber_sampel":
-                    $models = $models->where('register.nama_rs', $val);
-                    break;
                 case "nama_rs":
                     $models = $models->where("register.nama_rs", 'ilike', '%' . $val . '%');
                     break;
@@ -220,10 +214,6 @@ class RegistrasiMandiri extends Controller
                     $models = $models->where('kota.id', $val);
                     break;
                 case "kategori":
-                    if ($val != 'isian') {
-                        $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
-                    }
-                    break;
                 case "kategori_isian":
                     $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
                     break;
