@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exports\AjaxTableExport;
-use App\Exports\RegisMandiriExport;
 use App\Models\PasienRegister;
 use App\Models\Sampel;
 use Illuminate\Http\Request;
@@ -11,6 +10,29 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class RegistrasiMandiri extends Controller
 {
+    protected $headerExport = [
+        'No',
+        'No Registrasi',
+        'Kode Sampel',
+        'Kategori',
+        'Status',
+        'Nama Pasien',
+        'NIK',
+        'Usia',
+        'Satuan',
+        'Tempat Lahir',
+        'Tanggal Lahir',
+        'Jenis Kelamin',
+        'Provinsi',
+        'Kota',
+        'Kecamatan',
+        'Kelurahan',
+        'Alamat',
+        'RT',
+        'RW',
+        'No. HP',
+    ];
+
     public function getData(Request $request, $isData = false)
     {
         $models = PasienRegister::leftJoin('register', 'register.id', 'pasien_register.register_id')
@@ -22,14 +44,13 @@ class RegistrasiMandiri extends Controller
             ->leftJoin('kelurahan', 'pasien.kelurahan_id', 'kelurahan.id')
             ->leftJoin('sampel', 'sampel.register_id', 'register.id')
             ->where('sampel.is_from_migration', false)
-            ->whereNull('sampel.deleted_at')
             ->where('pasien.is_from_migration', false)
             ->where('pasien_register.is_from_migration', false)
+            ->where('register.is_from_migration', false)
+            ->whereNull('sampel.deleted_at')
             ->whereNull('register.deleted_at');
 
-        $models = $models->where('register.is_from_migration', false);
         $params = $request->get('params', false);
-        $search = $request->get('search', false);
         $order = $request->get('order', 'name');
 
         if ($params) {
@@ -82,7 +103,7 @@ class RegistrasiMandiri extends Controller
                         $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
                         break;
                     case "start_nomor_sampel":
-                        if (preg_match('{^'.Sampel::NUMBER_FORMAT.'$}', $val)) {
+                        if (preg_match('{^' . Sampel::NUMBER_FORMAT . '$}', $val)) {
                             $str = $val;
                             $n = 1;
                             $start = $n - strlen($str);
@@ -95,7 +116,7 @@ class RegistrasiMandiri extends Controller
                         }
                         break;
                     case "end_nomor_sampel":
-                        if (preg_match('{^'.Sampel::NUMBER_FORMAT.'$}', $val)) {
+                        if (preg_match('{^' . Sampel::NUMBER_FORMAT . '$}', $val)) {
                             $str = $val;
                             $n = 1;
                             $start = $n - strlen($str);
@@ -156,53 +177,6 @@ class RegistrasiMandiri extends Controller
                     break;
             }
         }
-        if (!$isData) {
-            $models = $models->select(
-                'register.nomor_register',
-                'pasien_register.register_id',
-                'pasien_register.pasien_id',
-                'pasien.nama_lengkap',
-                'pasien.nik',
-                'pasien.status',
-                'pasien.usia_bulan',
-                'pasien.usia_tahun',
-                'kota.nama as nama_kota',
-                'register.created_at as tgl_input',
-                'register.sumber_pasien',
-                'register.jenis_registrasi',
-                'register.dinkes_pengirim',
-                'register.sumber_pasien',
-                'register.nama_rs',
-                'register.other_nama_rs',
-                'sampel.nomor_sampel',
-                'sampel.sampel_status')->distinct();
-        } else {
-            $models = $models->select(
-                'register.nomor_register',
-                'sampel.nomor_sampel',
-                'register.sumber_pasien',
-                'pasien.status',
-                'pasien.nama_lengkap',
-                'pasien.nik',
-                'pasien.usia_tahun',
-                'pasien.tanggal_lahir',
-                'pasien.tempat_lahir',
-                'pasien.jenis_kelamin',
-                'pasien.alamat_lengkap',
-                'kota.nama as nama_kota',
-                'provinsi.nama as provinsi',
-                'kecamatan.nama as kecamatan',
-                'kelurahan.nama as kelurahan',
-                'pasien.no_rt',
-                'pasien.no_rw',
-                'pasien.no_hp',
-                'register.no_telp',
-                'register.fasyankes_pengirim',
-                'register.nama_rs',
-                'register.nama_dokter',
-                'register.kunjungan_ke',
-                'register.created_at')->distinct();
-        }
 
         $count = $models->count('register.nomor_register');
 
@@ -226,30 +200,10 @@ class RegistrasiMandiri extends Controller
         foreach ($models as $idx => &$model) {
             $model->no = $no++;
         }
-        $header = [
-            'No',
-            'No Registrasi',
-            'Kode Sampel',
-            'Kategori',
-            'Status',
-            'Nama Pasien',
-            'NIK',
-            'Usia',
-            'Satuan',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Jenis Kelamin',
-            'Provinsi',
-            'Kota',
-            'Kecamatan',
-            'Kelurahan',
-            'Alamat',
-            'RT',
-            'RW',
-            'No. HP',
-            'Kunjungan Ke',
-            'Tanggal Registrasi',
-        ];
+
+        $this->header[] = 'Kunjungan Ke';
+        $this->header[] = 'Tanggal Registrasi';
+
         $mapping = function ($model) {
             return [
                 $model->no,
@@ -279,7 +233,7 @@ class RegistrasiMandiri extends Controller
         $column_format = [
         ];
 
-        return Excel::download(new AjaxTableExport($models, $header, $mapping, $column_format, 'Registrasi Mandiri', 'V', $models->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
+        return Excel::download(new AjaxTableExport($models, $this->header, $mapping, $column_format, 'Registrasi Mandiri', 'V', $models->count()), 'Registrasi-Mandiri-' . time() . '.xlsx');
     }
 
     public function exportRujukan(Request $request)
@@ -289,34 +243,13 @@ class RegistrasiMandiri extends Controller
         foreach ($models as $idx => &$model) {
             $model->no = $no++;
         }
-        $header = [
-            'No',
-            'No Registrasi',
-            'Kode Sampel',
-            'Kategori',
-            'Status',
-            'Nama Pasien',
-            'NIK',
-            'Usia',
-            'Satuan',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Jenis Kelamin',
-            'Provinsi',
-            'Kota',
-            'Kecamatan',
-            'Kelurahan',
-            'Alamat',
-            'RT',
-            'RW',
-            'No. HP',
-            'Instansi Pengirim',
-            'Nama Fasyankes/Dinkes',
-            'Dokter',
-            'Telp Fasyankes',
-            'Kunjungan Ke',
-            'Tanggal Registrasi',
-        ];
+        $this->header[] = 'Instansi Pengirim';
+        $this->header[] = 'Nama Fasyankes/Dinkes';
+        $this->header[] = 'Dokter';
+        $this->header[] = 'Telp Fasyankes';
+        $this->header[] = 'Kunjungan Ke';
+        $this->header[] = 'Tanggal Registrasi';
+
         $mapping = function ($model) {
             return [
                 $model->no,
@@ -350,7 +283,7 @@ class RegistrasiMandiri extends Controller
         $column_format = [
         ];
 
-        return Excel::download(new AjaxTableExport($models, $header, $mapping, $column_format, 'Registrasi Rujukan', 'Z', $models->count()), 'Registrasi-Rujukan-' . time() . '.xlsx');
+        return Excel::download(new AjaxTableExport($models, $this->header, $mapping, $column_format, 'Registrasi Rujukan', 'Z', $models->count()), 'Registrasi-Rujukan-' . time() . '.xlsx');
     }
 
 }

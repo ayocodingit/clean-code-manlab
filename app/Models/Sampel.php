@@ -184,4 +184,6 @@ class Sampel extends Model
     {
         return $this->belongsTo(JenisVTM::class, 'jenis_vtm_id');
     }
+
+
 }
