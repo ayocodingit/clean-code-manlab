@@ -188,41 +188,41 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function sampelPerdomisili(Request $request)
-    {
-        $models = PasienRegister::leftJoin('register', 'register.id', 'pasien_register.register_id')
-            ->leftJoin('pasien', 'pasien.id', 'pasien_register.pasien_id')
-            ->leftJoin('fasyankes', 'fasyankes.id', 'register.fasyankes_id')
-            ->leftJoin('kota', 'kota.id', 'pasien.kota_id')
-            ->leftJoin('provinsi', 'pasien.provinsi_id', 'provinsi.id')
-            ->leftJoin('kecamatan', 'pasien.kecamatan_id', 'kecamatan.id')
-            ->leftJoin('kelurahan', 'pasien.kelurahan_id', 'kelurahan.id')
-            ->leftJoin('sampel', 'sampel.register_id', 'register.id')
-            ->where('sampel.is_from_migration', false)
-            ->whereNull('sampel.deleted_at')
-            ->where('pasien.is_from_migration', false)
-            ->where('pasien_register.is_from_migration', false)
-            ->whereNull('register.deleted_at')
-            ->where('register.is_from_migration', false)
-            ->select(DB::raw('upper(kota.nama) as domisili'), DB::raw('count(*) as jumlah'))
-            ->groupBy('kota.nama');
+    // public function sampelPerdomisili(Request $request)
+    // {
+    //     $models = PasienRegister::leftJoin('register', 'register.id', 'pasien_register.register_id')
+    //         ->leftJoin('pasien', 'pasien.id', 'pasien_register.pasien_id')
+    //         ->leftJoin('fasyankes', 'fasyankes.id', 'register.fasyankes_id')
+    //         ->leftJoin('kota', 'kota.id', 'pasien.kota_id')
+    //         ->leftJoin('provinsi', 'pasien.provinsi_id', 'provinsi.id')
+    //         ->leftJoin('kecamatan', 'pasien.kecamatan_id', 'kecamatan.id')
+    //         ->leftJoin('kelurahan', 'pasien.kelurahan_id', 'kelurahan.id')
+    //         ->leftJoin('sampel', 'sampel.register_id', 'register.id')
+    //         ->where('sampel.is_from_migration', false)
+    //         ->whereNull('sampel.deleted_at')
+    //         ->where('pasien.is_from_migration', false)
+    //         ->where('pasien_register.is_from_migration', false)
+    //         ->whereNull('register.deleted_at')
+    //         ->where('register.is_from_migration', false)
+    //         ->select(DB::raw('upper(kota.nama) as domisili'), DB::raw('count(*) as jumlah'))
+    //         ->groupBy('kota.nama');
 
-        $order = $request->get('order', 'domisili');
-        $page = $request->get('page', 1);
-        $perpage = $request->get('perpage', 500);
+    //     $order = $request->get('order', 'domisili');
+    //     $page = $request->get('page', 1);
+    //     $perpage = $request->get('perpage', 500);
 
-        if ($order) {
-            $order_direction = $request->get('order_direction', 'asc');
-            $models = $models->orderBy($order, $order_direction);
-        }
+    //     if ($order) {
+    //         $order_direction = $request->get('order_direction', 'asc');
+    //         $models = $models->orderBy($order, $order_direction);
+    //     }
 
-        $count = clone $models;
-        $models = $models->skip(($page - 1) * $perpage)->take($perpage)->get();
-        $count = count($count->get());
+    //     $count = clone $models;
+    //     $models = $models->skip(($page - 1) * $perpage)->take($perpage)->get();
+    //     $count = count($count->get());
 
-        return response()->json([
-            'data' => $models,
-            'count' => $count,
-        ]);
-    }
+    //     return response()->json([
+    //         'data' => $models,
+    //         'count' => $count,
+    //     ]);
+    // }
 }
