@@ -44,9 +44,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/kecamatan', 'KotaController@listKecamatan');
     Route::get('/kelurahan', 'KotaController@listKelurahan');
     Route::post('/kota', 'KotaController@saveKota');
-    Route::post('/kota/{id}', 'KotaController@updateKota');
-    Route::delete('/kota/{id}', 'KotaController@deleteKota');
-    Route::get('/kota/{id}', 'KotaController@showUpdate');
+    Route::post('/kota/{kota}', 'KotaController@updateKota');
+    Route::delete('/kota/{kota}', 'KotaController@deleteKota');
+    Route::get('/kota/{kota}', 'KotaController@showUpdate');
     Route::get('/dinkes', 'DinkesController@listDinkes');
     Route::post('/dinkes', 'DinkesController@saveDinkes');
     Route::post('/dinkes/{id}', 'DinkesController@updateDinkes');

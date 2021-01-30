@@ -2,59 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kota;
-use App\Models\Provinsi;
 use App\Models\Kecamatan;
 use App\Models\Kelurahan;
+use App\Models\Kota;
+use App\Models\Provinsi;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+
 class KotaController extends Controller
 {
     public function listKota(Request $request)
     {
-        $models = Kota::with(['provinsi']);
-        $params = $request->get('params',false);
-        $search = $request->get('search',false);
-        $order  = $request->get('order','nama');
+        $models = Kota::with('provinsi');
+        $search = $request->get('search', false);
+        $order = $request->get('order', 'nama');
+        $order_direction = $request->get('order_direction', 'asc');
 
         if ($search != '') {
-            $models = $models->where(function($q) use ($search) {
-                $q->where('kota.nama','ilike','%'.$search.'%')
-                   ->orWhereHas('provinsi', function($query) use ($search) { 
-                        $query->where('provinsi.nama','ilike','%'.$search.'%');
-                   });
+            $models = $models->where(function ($q) use ($search) {
+                $q->where('nama', 'ilike', '%' . $search . '%')
+                    ->orWhereHas('provinsi', function ($query) use ($search) {
+                        $query->where('nama', 'ilike', '%' . $search . '%');
+                    });
             });
         }
         $count = $models->count();
 
-        $page = $request->get('page',1);
-        $perpage = $request->get('perpage',999999);
+        $page = $request->get('page', 1);
+        $perpage = $request->get('perpage', 999999);
 
-         if ($order) {
-            $order_direction = $request->get('order_direction','asc');
-            if (empty($order_direction)) $order_direction = 'asc';
-
+        if ($order) {
             switch ($order) {
                 case 'nama':
-                    $models = $models->orderBy($order,$order_direction);
+                    $models = $models->orderBy($order, $order_direction);
                     break;
                 case 'provinsi':
-                    $models = $models->leftJoin('provinsi','provinsi.id','kota.provinsi_id')
-                                ->select('kota.*')
-                                ->addSelect('provinsi.nama as nama_kota')
-                                ->distinct()
-                                ->orderBy('nama_kota',$order_direction);
-                    break;
-                default:
-                    $models = $models->orderBy($order,$order_direction);
+                    $models = $models->leftJoin('provinsi', 'provinsi.id', 'kota.provinsi_id')
+                        ->select('kota.*')
+                        ->addSelect('provinsi.nama as nama_kota')
+                        ->distinct()
+                        ->orderBy('nama_kota', $order_direction);
                     break;
             }
         }
-        $models = $models->skip(($page-1) * $perpage)->take($perpage)->get();
+        $models = $models->skip(($page - 1) * $perpage)->take($perpage)->get();
 
         $result = [
             'data' => $models,
-            'count' => $count
+            'count' => $count,
         ];
 
         return response()->json($result);
@@ -62,7 +56,7 @@ class KotaController extends Controller
 
     public function saveKota(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'id' => 'required|unique:kota,id',
             'nama' => 'required|max:255',
             'provinsi_id' => 'required',
@@ -73,49 +67,40 @@ class KotaController extends Controller
         $kota->nama = strtoupper($request->nama);
         $kota->provinsi_id = $request->provinsi_id;
         $kota->save();
-        
-        return response()->json(['status'=>201,'message'=>'Berhasil menambahkan Kota','result'=>[]]);
+
+        return response()->json(['status' => 201, 'message' => 'Berhasil menambahkan Kota', 'result' => []]);
     }
 
-    public function deleteKota(Request $request,$id)
+    public function deleteKota(Kota $kota)
     {
-        try{
-            $user = Kota::where('id',$id)->first();
-            $user->delete();
-            return response()->json(['status'=>200,'message'=>'Berhasil menghapus data Kota','result'=>[]]);
-        }catch(\Exception $ex) {
-            return response()->json(['status'=>400,'message'=>'Gagal menghapus data, terjadi kesalahan server','result'=>$ex->getMessage()]);
-        }
-        
+        $kota->delete();
+        return response()->json(['message' => 'Berhasil menghapus data Kota']);
     }
 
-    public function updateKota(Request $request, $id)
+    public function updateKota(Request $request, Kota $kota)
     {
-        $this->validate($request,[
-            'id' => 'required|unique:kota,id,'.$id,
+        $this->validate($request, [
+            'id' => 'required|unique:kota,id,' . $kota->id,
             'nama' => 'required|max:255',
             'provinsi_id' => 'required',
         ]);
 
-        // dd($id);
-        $kota = Kota::where('id',(int) $id)->first();
-        $kota->id = (int) $request->get('id');
+        $kota->id = $request->get('id');
         $kota->nama = strtoupper($request->nama);
-        $kota->provinsi_id =  $request->get('provinsi_id');
+        $kota->provinsi_id = $request->get('provinsi_id');
         $kota->save();
 
-        return response()->json(['status'=>200,'message'=>'Berhasil mengubah data kota','result'=>[]]);
+        return response()->json(['message' => 'Berhasil mengubah data kota']);
     }
 
-    public function showUpdate(Request $request, $id)
+    public function showUpdate(Kota $kota)
     {
-        $kota = Kota::with(['provinsi'])->where('id',(int) $id)->first();
-        return response()->json(['status'=>200,'message'=>'success','result'=>$kota]);
+        return response()->json(['result' => $kota->with('provinsi')]);
     }
 
     public function listProvinsi()
     {
-        return response()->json(Provinsi::select('id','nama')->orderBy('nama')->get());
+        return response()->json(Provinsi::select('id', 'nama')->orderBy('nama')->get());
     }
 
     public function listKecamatan(Request $request)
