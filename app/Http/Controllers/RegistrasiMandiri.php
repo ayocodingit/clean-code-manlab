@@ -195,11 +195,7 @@ class RegistrasiMandiri extends Controller
 
     public function exportMandiri(Request $request)
     {
-        $models = $this->getData($request, true);
-        $no = (int)($request->get('page', 1) - 1) * $request->get('perpage', 500) + 1;
-        foreach ($models as $idx => &$model) {
-            $model->no = $no++;
-        }
+        $models = $this->getDataExport($request);
 
         $this->header[] = 'Kunjungan Ke';
         $this->header[] = 'Tanggal Registrasi';
@@ -238,11 +234,7 @@ class RegistrasiMandiri extends Controller
 
     public function exportRujukan(Request $request)
     {
-        $models = $this->getData($request, true);
-        $no = (int)($request->get('page', 1) - 1) * $request->get('perpage', 500) + 1;
-        foreach ($models as $idx => &$model) {
-            $model->no = $no++;
-        }
+        $models = $this->getDataExport($request);
         $this->header[] = 'Instansi Pengirim';
         $this->header[] = 'Nama Fasyankes/Dinkes';
         $this->header[] = 'Dokter';
@@ -284,6 +276,16 @@ class RegistrasiMandiri extends Controller
         ];
 
         return Excel::download(new AjaxTableExport($models, $this->header, $mapping, $column_format, 'Registrasi Rujukan', 'Z', $models->count()), 'Registrasi-Rujukan-' . time() . '.xlsx');
+    }
+
+    public function getDataExport(Request $request)
+    {
+        $models = $this->getData($request, true);
+        $no = (int)($request->get('page', 1) - 1) * $request->get('perpage', 500) + 1;
+        foreach ($models as $idx => &$model) {
+            $model->no = $no++;
+        }
+        return $models;
     }
 
 }
