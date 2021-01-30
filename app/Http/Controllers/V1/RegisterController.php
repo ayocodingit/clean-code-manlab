@@ -34,11 +34,8 @@ class RegisterController extends Controller
         DB::beginTransaction();
         try {
             $user = Auth::user();
-
             $register = Register::create($this->getRequestRegister($request), 'create');
-
             $pasien = Pasien::create($this->getRequestPasien($request), 'create');
-
             PasienRegister::create([
                 'pasien_id' => $pasien->id,
                 'register_id' => $register->id,
