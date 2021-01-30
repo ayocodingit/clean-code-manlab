@@ -5,3 +5,7 @@ exclude_patterns:
 - "routes"
 - "app/Console"
 - "app/Http/Controllers/V1/DashboardController.php"
+- "app/Http/Controllers/V1/ValidasiController.php"
+- "app/Http/Controllers/V1/VerifikasiController.php"
+- "app/Http/Controllers/V1/RegistrasiMandiriController.php"
+- "app/Http/Controllers/V1/PCRController.php"
