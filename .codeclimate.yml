@@ -4,3 +4,4 @@ exclude_patterns:
 - "database"
 - "routes"
 - "app/Console"
+- "app/Http/Controllers/V1/DashboardController.php"
