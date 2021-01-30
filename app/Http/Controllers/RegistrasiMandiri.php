@@ -175,10 +175,6 @@ class RegistrasiMandiri extends Controller
     public function params($params, $models)
     {
         foreach (json_decode($params) as $key => $val) {
-            if ($val == '') {
-                continue;
-            }
-
             switch ($key) {
                 case "nama_pasien":
                     $models = $models->where('pasien.nama_lengkap', 'ilike', '%' . $val . '%');
