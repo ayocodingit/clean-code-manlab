@@ -218,30 +218,10 @@ class RegistrasiMandiri extends Controller
                     $models = $models->where('register.sumber_pasien', 'ilike', "%$val%");
                     break;
                 case "start_nomor_sampel":
-                    if (preg_match('{^' . Sampel::NUMBER_FORMAT . '$}', $val)) {
-                        $str = $val;
-                        $n = 1;
-                        $start = $n - strlen($str);
-                        $str1 = substr($str, $start);
-                        $str2 = substr($str, 0, $n);
-                        $models->whereRaw("sampel.nomor_sampel ilike '%$str2%'");
-                        $models->whereRaw("right(sampel.nomor_sampel,-1)::bigint >=  $str1");
-                    } else {
-                        $models->whereNull('sampel.nomor_sampel');
-                    }
+                    $models = $this->nomorSampel($val, '>=', $models);
                     break;
                 case "end_nomor_sampel":
-                    if (preg_match('{^' . Sampel::NUMBER_FORMAT . '$}', $val)) {
-                        $str = $val;
-                        $n = 1;
-                        $start = $n - strlen($str);
-                        $str1 = substr($str, $start);
-                        $str2 = substr($str, 0, $n);
-                        $models->whereRaw("sampel.nomor_sampel ilike '%$str2%'");
-                        $models->whereRaw("right(sampel.nomor_sampel,-1)::bigint <=  $str1");
-                    } else {
-                        $models->whereNull('sampel.nomor_sampel');
-                    }
+                    $models = $this->nomorSampel($val, '<=', $models);
                     break;
                 case "reg_fasyankes_pengirim":
                     $models = $models->where('register.fasyankes_pengirim', 'ilike', $val);
@@ -251,37 +231,53 @@ class RegistrasiMandiri extends Controller
         return $models;
     }
 
-    public function order($order, $order_direction, $models)
+    // public function order($order, $order_direction, $models)
+    // {
+    //     switch ($order) {
+    //         case 'nama_lengkap':
+    //         case 'nama_pasien':
+    //             $models = $models->orderBy('pasien.nama_lengkap', $order_direction);
+    //             break;
+    //         case 'created_at':
+    //         case 'tgl_input':
+    //             $models = $models->orderBy('register.created_at', $order_direction);
+    //             break;
+    //         case 'nomor_register':
+    //             $models = $models->orderBy('register.nomor_register', $order_direction);
+    //             break;
+    //         case 'nama_kota':
+    //             $models = $models->orderBy('kota.nama', $order_direction);
+    //             break;
+    //         case 'sumber_pasien':
+    //             $models = $models->orderBy('register.sumber_pasien', $order_direction);
+    //             break;
+    //         case 'nama_rs':
+    //             $models = $models->orderBy('register.nama_rs', $order_direction);
+    //             break;
+    //         case 'no_sampel':
+    //             $models = $models->orderBy('sampel.nomor_sampel', $order_direction);
+    //             break;
+    //         case 'status':
+    //             $models = $models->orderBy('pasien.status', $order_direction);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     return $models;
+    // }
+
+    public function nomorSampel($value, $operator, $models)
     {
-        switch ($order) {
-            case 'nama_lengkap':
-            case 'nama_pasien':
-                $models = $models->orderBy('pasien.nama_lengkap', $order_direction);
-                break;
-            case 'created_at':
-            case 'tgl_input':
-                $models = $models->orderBy('register.created_at', $order_direction);
-                break;
-            case 'nomor_register':
-                $models = $models->orderBy('register.nomor_register', $order_direction);
-                break;
-            case 'nama_kota':
-                $models = $models->orderBy('kota.nama', $order_direction);
-                break;
-            case 'sumber_pasien':
-                $models = $models->orderBy('register.sumber_pasien', $order_direction);
-                break;
-            case 'nama_rs':
-                $models = $models->orderBy('register.nama_rs', $order_direction);
-                break;
-            case 'no_sampel':
-                $models = $models->orderBy('sampel.nomor_sampel', $order_direction);
-                break;
-            case 'status':
-                $models = $models->orderBy('pasien.status', $order_direction);
-                break;
-            default:
-                break;
+        if (preg_match('{^' . Sampel::NUMBER_FORMAT . '$}', $value)) {
+            $str = $value;
+            $n = 1;
+            $start = $n - strlen($str);
+            $str1 = substr($str, $start);
+            $str2 = substr($str, 0, $n);
+            $models->whereRaw("sampel.nomor_sampel ilike '%$str2%'");
+            $models->whereRaw("right(sampel.nomor_sampel,-1)::bigint $operator $str1");
+        } else {
+            $models->whereNull('sampel.nomor_sampel');
         }
         return $models;
     }
