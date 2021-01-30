@@ -64,4 +64,9 @@ class Register extends Model
     {
         return $this->belongsTo(TesMasif::class);
     }
+
+    public function sampel()
+    {
+        return $this->hasOne(Sampel::class);
+    }
 }

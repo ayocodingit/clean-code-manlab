@@ -20,4 +20,9 @@ class PasienRegister extends Pivot
     {
         return $this->belongsTo(Pasien::class);
     }
+
+    public function register()
+    {
+        return $this->belongsTo(Register::class);
+    }
 }

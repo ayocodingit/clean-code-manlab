@@ -77,11 +77,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/get-data', 'PemeriksaanSampleController@getData');
         Route::get('/get-dikirim', 'PemeriksaanSampleController@getDikirim');
     });
-    // temp Routing for migration
-    Route::prefix('migrasi')->group(function () {
-        Route::post('/mandiri', 'Temp\MigrasiController@migrasiMandiri');
-        Route::post('rujukan', 'Temp\MigrasiController@MigrasiRujukan');
-    });
     //V1
     Route::group(['namespace' => 'V1', 'prefix' => 'v1'], function () {
         Route::group(['prefix' => 'dashboard'], function () {
@@ -151,13 +146,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('penyakit-penyerta/detail/{penyakitPenyerta}', 'PenyakitPenyertaController@show');
         Route::group(['prefix' => 'register'], function () {
             Route::get('/', 'RegisterListController@index');
-            Route::post('store', 'RegisterController@store');
             Route::post('mandiri', 'RegisterController@storeMandiri');
-            Route::post('mandiri/update/{regis_id}/{pasien_id}', 'RegisterController@storeUpdate');
+            Route::post('mandiri/update/{register}/{pasien}', 'RegisterController@storeUpdate');
             Route::get('mandiri/{register_id}/{pasien_id}', 'RegisterController@getById');
             Route::get('logs/{register_id}', 'RegisterController@logs');
             Route::delete('mandiri/{register_id}/{pasien_id}', 'RegisterController@delete');
-            Route::get('delete-sampel/{id}', 'RegisterController@deleteSample');
             Route::get('detail/{register}', 'RegisterController@show');
             Route::post('update/{register}', 'RegisterController@update');
             Route::delete('delete/{register}', 'RegisterController@destroy');
